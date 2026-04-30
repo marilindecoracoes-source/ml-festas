@@ -53,7 +53,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const isDownload = req.nextUrl.searchParams.get('download') === 'true'
   const nomeArquivo = `contrato-${contrato.numero.replace('/', '-')}.pdf`
 
-  return new NextResponse(pdfBytes, {
+  return new NextResponse(Buffer.from(pdfBytes), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': isDownload

@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0b0b13;
+    --card: #111119;
+    --foreground: #ffffff;
+    --gold: #C9A84C;
+    --gold-light: #F0C040;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #0b0b13;
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.025em;
+  }
+}
+
+/* ── Keyframes ─────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmerSweep {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.10), inset 0 0 8px rgba(201,168,76,0.04); }
+  50%       { box-shadow: 0 0 22px rgba(201,168,76,0.28), inset 0 0 12px rgba(201,168,76,0.07); }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(201,168,76,0.20); }
+  50%       { border-color: rgba(201,168,76,0.45); }
+}
+
+@keyframes scanLine {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 0.06; }
+  90%  { opacity: 0.06; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* ── Components ────────────────────────────────────────── */
+
+@layer components {
+
+  /* Cards */
+  .gold-card {
+    @apply border border-gold/[0.13] rounded-2xl;
+    background-color: #111119;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    animation: fadeInUp 0.38s ease both;
+  }
+
+  .gold-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(201,168,76,0.22);
+    box-shadow: 0 10px 36px rgba(0,0,0,0.55), 0 0 28px rgba(201,168,76,0.07);
+  }
+
+  /* Primary button — shimmer sweep */
+  .gold-btn {
+    @apply font-semibold rounded-xl px-4 py-2.5 text-black relative overflow-hidden;
+    background: linear-gradient(120deg, #C9A84C 0%, #F0C040 40%, #C9A84C 80%);
+    background-size: 200% auto;
+    background-position: left center;
+    transition: background-position 0.5s ease, box-shadow 0.25s ease, transform 0.18s ease;
+  }
+
+  .gold-btn:hover:not(:disabled) {
+    background-position: right center;
+    box-shadow: 0 0 24px rgba(201,168,76,0.40), 0 4px 18px rgba(0,0,0,0.35);
+    transform: translateY(-1px);
+  }
+
+  .gold-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 0 12px rgba(201,168,76,0.25);
+  }
+
+  .gold-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  /* Ghost button */
+  .ghost-btn {
+    @apply border border-zinc-700/80 text-zinc-300 rounded-xl px-4 py-2.5;
+    transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
+  }
+
+  .ghost-btn:hover {
+    border-color: rgba(201,168,76,0.50);
+    color: #C9A84C;
+    box-shadow: 0 0 14px rgba(201,168,76,0.08);
+    transform: translateY(-1px);
+  }
+
+  /* Inputs */
+  .input-dark {
+    @apply border border-zinc-700/80 text-white rounded-xl px-3.5 py-2.5 w-full focus:outline-none placeholder-zinc-600;
+    background-color: #0d0d17;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .input-dark:focus {
+    border-color: rgba(201,168,76,0.55);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.09), 0 0 18px rgba(201,168,76,0.07);
+  }
+
+  /* Sidebar nav */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-zinc-500 cursor-pointer;
+    transition: color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .sidebar-item:hover {
+    color: #e4e4f0;
+    background-color: rgba(255,255,255,0.05);
+    transform: translateX(2px);
+  }
+
+  .sidebar-item-active {
+    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gold font-medium border border-gold/20;
+    background-color: rgba(201,168,76,0.09);
+    animation: glowPulse 3.5s ease-in-out infinite, borderPulse 3.5s ease-in-out infinite;
+  }
+
+  /* Status badge */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Fade-in-up helper */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.38s ease both;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease both;
+  }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #08080f; }
+::-webkit-scrollbar-thumb {
+  background: #252535;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+
+/* ── Kanban ────────────────────────────────────────────── */
+
+.kanban-dragging {
+  opacity: 0.85;
+  transform: rotate(2deg) scale(1.02);
+}

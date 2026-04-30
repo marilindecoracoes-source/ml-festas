@@ -102,7 +102,7 @@ export default function ClientesList({ clientesIniciais }: Props) {
                         {cliente.nome}
                       </Link>
                       {aniversariante(cliente) && (
-                        <Cake size={14} className="text-gold" title="Aniversariante do mês" />
+                        <Cake size={14} className="text-gold" aria-label="Aniversariante do mês" />
                       )}
                     </div>
                     <p className="text-zinc-500 text-xs md:hidden">{formatarCPF(cliente.cpf)}</p>

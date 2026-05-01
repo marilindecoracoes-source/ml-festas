@@ -19,6 +19,7 @@ function ResetPasswordForm() {
   useEffect(() => {
     const supabase = createClient()
     const code = searchParams.get('code')
+    let unsubscribe: (() => void) | undefined
 
     if (code) {
       supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
@@ -29,14 +30,21 @@ function ResetPasswordForm() {
         }
       })
     } else {
-      supabase.auth.getSession().then(({ data }) => {
-        if (data.session) {
+      // Hash-based flow: supabase client auto-processes #access_token from URL
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
           setSessionReady(true)
-        } else {
-          toast.error('Link inválido ou expirado.')
         }
       })
+      unsubscribe = () => subscription.unsubscribe()
+
+      // Also check immediately if session already established
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) setSessionReady(true)
+      })
     }
+
+    return () => unsubscribe?.()
   }, [searchParams])
 
   async function handleReset(e: React.FormEvent) {

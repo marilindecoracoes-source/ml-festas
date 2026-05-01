@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -12,6 +12,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.includes('access_token') && hash.includes('type=recovery')) {
+      router.replace('/reset-password' + hash)
+    }
+  }, [router])
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()

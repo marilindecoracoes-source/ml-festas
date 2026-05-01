@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Public routes — no auth needed
-  if (pathname.startsWith('/consulta') || pathname.startsWith('/api/consulta')) {
+  if (pathname.startsWith('/consulta') || pathname.startsWith('/api/consulta') || pathname === '/reset-password') {
     return supabaseResponse
   }
 

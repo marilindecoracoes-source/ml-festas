@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
+import { hashCPF } from '@/lib/cpf-crypto'
 
 const STATUS_VISIVEIS_ENCOMENDA = ['Pedido', 'Em Produção', 'Pronto']
 const STATUS_VISIVEIS_LOCACAO = ['Pedido', 'Em Produção', 'Retirado']
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
   const { data: cliente } = await supabase
     .from('clientes')
     .select('id')
-    .eq('cpf', cpf)
+    .eq('cpf_hash', hashCPF(cpf))
     .single()
 
   if (!cliente) return NextResponse.json({ pedidos: [] })

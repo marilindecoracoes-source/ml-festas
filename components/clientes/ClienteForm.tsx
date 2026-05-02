@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import { Loader2, Search } from 'lucide-react'
 import type { Cliente } from '@/types'
@@ -80,7 +79,6 @@ export default function ClienteForm({ cliente }: Props) {
 
   async function onSubmit(data: FormData) {
     setLoading(true)
-    const supabase = createClient()
     const cpfLimpo = data.cpf.replace(/\D/g, '')
     const telefoneLimpo = (data.telefone ?? '').replace(/\D/g, '')
     const whatsapp_link = telefoneLimpo ? `https://wa.me/55${telefoneLimpo}` : null
@@ -102,13 +100,22 @@ export default function ClienteForm({ cliente }: Props) {
     }
 
     if (cliente?.id) {
-      const { error } = await supabase.from('clientes').update(payload).eq('id', cliente.id)
-      if (error) { toast.error('Erro ao salvar cliente.'); setLoading(false); return }
+      const res = await fetch(`/api/clientes/${cliente.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) { toast.error('Erro ao salvar cliente.'); setLoading(false); return }
       toast.success('Cliente atualizado!')
       router.push(`/clientes/${cliente.id}`)
     } else {
-      const { data: novo, error } = await supabase.from('clientes').insert({ ...payload, total_gasto: 0 }).select().single()
-      if (error) { toast.error('Erro ao criar cliente.'); setLoading(false); return }
+      const res = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) { toast.error('Erro ao criar cliente.'); setLoading(false); return }
+      const novo = await res.json()
       toast.success('Cliente criado!')
       router.push(`/clientes/${novo.id}`)
     }

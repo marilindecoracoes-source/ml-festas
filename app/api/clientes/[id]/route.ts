@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
+import { hashCPF } from '@/lib/cpf-crypto'
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServiceClient()
@@ -11,7 +12,13 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServiceClient()
   const body = await request.json()
-  const { data, error } = await supabase.from('clientes').update(body).eq('id', params.id).select().single()
+  const cpf_hash = hashCPF(body.cpf)
+  const { data, error } = await supabase
+    .from('clientes')
+    .update({ ...body, cpf_hash })
+    .eq('id', params.id)
+    .select()
+    .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }

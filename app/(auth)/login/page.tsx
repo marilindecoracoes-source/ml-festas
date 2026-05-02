@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 
@@ -23,9 +22,17 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    if (res.status === 429) {
+      toast.error('Muitas tentativas. Tente novamente em 15 minutos.')
+      setLoading(false)
+      return
+    }
+    if (!res.ok) {
       toast.error('E-mail ou senha incorretos.')
       setLoading(false)
       return

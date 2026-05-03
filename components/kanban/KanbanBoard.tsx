@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd'
 import KanbanCard from './KanbanCard'
 import toast from 'react-hot-toast'
@@ -18,6 +19,7 @@ interface KanbanBoardProps {
 }
 
 export default function KanbanBoard({ items: itemsIniciais, colunas, tipo, tabela }: KanbanBoardProps) {
+  const router = useRouter()
   const [items, setItems] = useState(itemsIniciais)
 
   function getItensDaColuna(status: string) {
@@ -73,6 +75,7 @@ export default function KanbanBoard({ items: itemsIniciais, colunas, tipo, tabel
     }
 
     toast.success('Status atualizado!')
+    router.refresh()
   }
 
   return (

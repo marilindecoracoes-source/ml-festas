@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd'
 import KanbanCard from './KanbanCard'
-import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import type { Encomenda, Locacao, StatusEncomenda, StatusLocacao } from '@/types'
 import { Plus } from 'lucide-react'
@@ -34,17 +33,22 @@ export default function KanbanBoard({ items: itemsIniciais, colunas, tipo, tabel
       (tabela === 'encomendas' && novoStatus === 'Material Retirado') ||
       (tabela === 'locacoes' && novoStatus === 'Retirado')
 
+    // Optimistic update
     setItems(prev => prev.map(i =>
       i.id === draggableId ? { ...i, status: novoStatus as any, ...(autoPago ? { restante_pago: true } : {}) } : i
     ))
 
-    const supabase = createClient()
     const item = items.find(i => i.id === draggableId)
-    const updatePayload: any = { status: novoStatus }
+    const updatePayload: Record<string, unknown> = { status: novoStatus }
     if (autoPago) updatePayload.restante_pago = true
-    const { error } = await supabase.from(tabela).update(updatePayload).eq('id', draggableId)
 
-    if (error) {
+    const res = await fetch(`/api/${tabela}/${draggableId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatePayload),
+    })
+
+    if (!res.ok) {
       setItems(prev => prev.map(i => i.id === draggableId ? { ...i, status: source.droppableId as any } : i))
       toast.error('Erro ao atualizar status.')
       return
@@ -56,11 +60,14 @@ export default function KanbanBoard({ items: itemsIniciais, colunas, tipo, tabel
       (tabela === 'locacoes' && novoStatus === 'Devolvido')
     ) {
       if (item?.cliente_id) {
-        const cliRes = await supabase.from('clientes').select('total_gasto').eq('id', item.cliente_id).single()
-        if (cliRes.data) {
-          await supabase.from('clientes')
-            .update({ total_gasto: (cliRes.data.total_gasto ?? 0) + (item.valor_total ?? 0) })
-            .eq('id', item.cliente_id)
+        const cliRes = await fetch(`/api/clientes/${item.cliente_id}`)
+        if (cliRes.ok) {
+          const cli = await cliRes.json()
+          await fetch(`/api/clientes/${item.cliente_id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ total_gasto: (cli.total_gasto ?? 0) + (item.valor_total ?? 0) }),
+          })
         }
       }
     }

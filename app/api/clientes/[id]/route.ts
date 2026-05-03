@@ -12,10 +12,10 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createServiceClient()
   const body = await request.json()
-  const cpf_hash = hashCPF(body.cpf)
+  const extra = body.cpf ? { cpf_hash: hashCPF(body.cpf) } : {}
   const { data, error } = await supabase
     .from('clientes')
-    .update({ ...body, cpf_hash })
+    .update({ ...body, ...extra })
     .eq('id', params.id)
     .select()
     .single()

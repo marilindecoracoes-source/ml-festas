@@ -25,8 +25,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['Space Grotesk', 'sans-serif'],
-        body: ['Space Grotesk', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        display: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        body: ['var(--font-inter)', 'Inter', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-gold': 'linear-gradient(135deg, #C9A84C 0%, #F0C040 100%)',

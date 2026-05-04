@@ -18,17 +18,18 @@ interface Props {
   locacoes: any[]
 }
 
-const statusEncVariant: Record<string, 'gold' | 'gray' | 'green'> = {
-  'Pedido': 'gray',
-  'Em Produção': 'gold',
-  'Pronto': 'blue' as any,
-  'Material Retirado': 'green',
+const statusEncVariant: Record<string, any> = {
+  'Pedido': 'blue',
+  'Em Produção': 'yellow',
+  'Pronto': 'green',
+  'Material Retirado': 'purple',
 }
 const statusLocVariant: Record<string, any> = {
-  'Pedido': 'gray',
-  'Em Produção': 'gold',
-  'Retirado': 'blue',
-  'Devolvido': 'green',
+  'Pedido': 'blue',
+  'Em Produção': 'yellow',
+  'Pronto': 'green',
+  'Retirado': 'purple',
+  'Devolvido': 'gray',
 }
 
 export default function ClienteDetalhe({ cliente, documentos, encomendas, locacoes }: Props) {

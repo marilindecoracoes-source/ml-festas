@@ -98,14 +98,14 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-60 border-r border-white/[0.06] fixed inset-y-0 left-0 z-30" style={{ backgroundColor: '#08080f' }}>
+      <aside className="hidden md:flex flex-col w-60 border-r border-white/[0.06] fixed inset-y-0 left-0 z-30" style={{ backgroundColor: '#0a0a0a' }}>
         <SidebarContent />
       </aside>
 
       {/* Mobile toggle */}
       <button
         className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-xl border border-white/10 text-white"
-        style={{ backgroundColor: '#111119' }}
+        style={{ backgroundColor: '#0a0a0a' }}
         onClick={() => setMobileOpen(!mobileOpen)}
       >
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -124,7 +124,7 @@ export default function Sidebar() {
         className={`md:hidden fixed inset-y-0 left-0 z-50 w-64 border-r border-white/[0.06] transition-transform duration-200 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ backgroundColor: '#08080f' }}
+        style={{ backgroundColor: '#0a0a0a' }}
       >
         <SidebarContent />
       </aside>

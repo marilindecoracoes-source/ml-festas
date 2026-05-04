@@ -47,7 +47,7 @@ export default function KanbanCard({ item, index, tipo }: KanbanCardProps) {
                 ? 'border-red-800/50 hover:border-red-700/60'
                 : 'border-zinc-800/50 hover:border-zinc-700/70'
             }`}
-            style={{ backgroundColor: '#111119' }}
+            style={{ backgroundColor: '#1a1a1a' }}
           >
             {atrasada && (
               <div className="flex items-center gap-1.5 mb-2 text-xs text-red-400">

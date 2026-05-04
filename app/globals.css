@@ -1,13 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: #0b0b13;
-    --card: #111119;
+    --background: #111111;
+    --card: #1a1a1a;
     --foreground: #ffffff;
     --gold: #C9A84C;
     --gold-light: #F0C040;
@@ -18,13 +16,13 @@
   }
 
   body {
-    background-color: #0b0b13;
-    font-family: 'Space Grotesk', sans-serif;
+    background-color: #111111;
+    font-family: var(--font-inter), 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-inter), 'Inter', sans-serif;
     letter-spacing: -0.025em;
   }
 }
@@ -70,7 +68,7 @@
   /* Cards */
   .gold-card {
     @apply border border-gold/[0.13] rounded-2xl;
-    background-color: #111119;
+    background-color: #1a1a1a;
     box-shadow: 0 1px 3px rgba(0,0,0,0.5);
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
     animation: fadeInUp 0.38s ease both;
@@ -123,7 +121,7 @@
   /* Inputs */
   .input-dark {
     @apply border border-zinc-700/80 text-white rounded-xl px-3.5 py-2.5 w-full focus:outline-none placeholder-zinc-600;
-    background-color: #0d0d17;
+    background-color: #222222;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
@@ -168,9 +166,9 @@
 /* ── Scrollbar ─────────────────────────────────────────── */
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #08080f; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
 ::-webkit-scrollbar-thumb {
-  background: #252535;
+  background: #2a2a2a;
   border-radius: 3px;
   transition: background 0.2s;
 }

@@ -16,10 +16,10 @@ interface Props {
 }
 
 const statusEncVariant: Record<string, any> = {
-  'Pedido': 'gray', 'Em Produção': 'gold', 'Pronto': 'blue', 'Material Retirado': 'green'
+  'Pedido': 'blue', 'Em Produção': 'yellow', 'Pronto': 'green', 'Material Retirado': 'purple'
 }
 const statusLocVariant: Record<string, any> = {
-  'Pedido': 'gray', 'Em Produção': 'gold', 'Pronto': 'blue', 'Retirado': 'blue', 'Devolvido': 'green'
+  'Pedido': 'blue', 'Em Produção': 'yellow', 'Pronto': 'green', 'Retirado': 'purple', 'Devolvido': 'gray'
 }
 
 export default function PedidoDetalhe({ item, tipo }: Props) {

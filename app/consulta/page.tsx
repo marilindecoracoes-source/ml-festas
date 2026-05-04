@@ -72,7 +72,7 @@ export default function ConsultaPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8" style={{ backgroundColor: '#0b0b13' }}>
+    <div className="min-h-screen px-4 py-8" style={{ backgroundColor: '#111111' }}>
       <div className="max-w-lg mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">

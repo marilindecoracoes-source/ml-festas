@@ -71,7 +71,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#0b0b13' }}>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#111111' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <img src="/logo.png" alt="ML Festas" className="h-24 w-24 mx-auto object-contain rounded-full mb-4" />

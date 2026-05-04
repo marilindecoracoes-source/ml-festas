@@ -4,7 +4,7 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import StatusChart from '@/components/dashboard/StatusChart'
 import { formatarMoeda, formatarData } from '@/lib/utils'
 import {
-  DollarSign, ShoppingBag, Users, AlertTriangle, Calendar, Package, Tent
+  DollarSign, ShoppingBag, Users, AlertTriangle, Calendar, Package, Tent, Lock
 } from 'lucide-react'
 import Link from 'next/link'
 import { subMonths, format, startOfMonth, endOfMonth, parseISO, isAfter } from 'date-fns'
@@ -19,6 +19,12 @@ export default async function DashboardPage() {
   const inicioMes = startOfMonth(hoje).toISOString()
   const fimMes = endOfMonth(hoje).toISOString()
   const em7Dias = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: perfil } = user
+    ? await supabase.from('perfis').select('role').eq('id', user.id).single()
+    : { data: null }
+  const isAdmin = perfil?.role === 'admin'
 
   const [encRes, locRes, cliRes] = await Promise.all([
     supabase.from('encomendas').select('status, valor_total, valor_sinal, restante_pago, data_entrega, created_at, titulo, id, clientes(nome)'),
@@ -131,8 +137,8 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Faturamento do mês"
-          value={formatarMoeda(fatEncomendas + fatLocacoes)}
-          subtitle={`Enc: ${formatarMoeda(fatEncomendas)} · Loc: ${formatarMoeda(fatLocacoes)}`}
+          value={isAdmin ? formatarMoeda(fatEncomendas + fatLocacoes) : '---'}
+          subtitle={isAdmin ? `Enc: ${formatarMoeda(fatEncomendas)} · Loc: ${formatarMoeda(fatLocacoes)}` : undefined}
           icon={<DollarSign size={20} />}
         />
         <StatCard
@@ -156,7 +162,14 @@ export default async function DashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueChart data={faturamentoMensal} />
+        {isAdmin ? (
+          <RevenueChart data={faturamentoMensal} />
+        ) : (
+          <div className="gold-card p-5 flex flex-col items-center justify-center h-[300px] gap-3">
+            <Lock size={28} className="text-zinc-600" />
+            <p className="text-zinc-600 text-sm">Faturamento restrito ao administrador</p>
+          </div>
+        )}
         <StatusChart data={pedidosPorStatus} />
       </div>
 

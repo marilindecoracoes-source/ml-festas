@@ -140,11 +140,6 @@ export default function PedidoForm({ tipo, item }: Props) {
 
       await supabase.from(itenTabela).delete().eq(itenField, item.id)
     } else {
-      // Gerar código sequencial
-      const { count } = await supabase.from(tabela).select('*', { count: 'exact', head: true })
-      const seq = (count ?? 0) + 1
-      payload.codigo = `ML-${String(seq).padStart(4, '0')}`
-
       // Gerar título
       const { count: pedidosCliente } = await supabase
         .from(tabela).select('*', { count: 'exact', head: true }).eq('cliente_id', data.cliente_id)
@@ -152,8 +147,14 @@ export default function PedidoForm({ tipo, item }: Props) {
       payload.titulo = numPedido === 1 ? clienteNome : `${clienteNome} — Pedido ${String(numPedido).padStart(2, '0')}`
       payload.status = 'Pedido'
 
-      const { data: novo, error } = await supabase.from(tabela).insert(payload).select().single()
-      if (error) { toast.error('Erro ao criar.'); setLoading(false); return }
+      let novo = null
+      for (let tentativa = 0; tentativa < 3; tentativa++) {
+        payload.codigo = `ML-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+        const { data: d, error: e } = await supabase.from(tabela).insert(payload).select().single()
+        if (!e) { novo = d; break }
+        if (e.code !== '23505') { toast.error('Erro ao criar.'); setLoading(false); return }
+      }
+      if (!novo) { toast.error('Erro ao criar: código duplicado. Tente novamente.'); setLoading(false); return }
       id = novo.id
     }
 

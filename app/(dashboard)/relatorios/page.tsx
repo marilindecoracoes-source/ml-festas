@@ -143,7 +143,7 @@ export default async function RelatoriosPage() {
   // --- Taxa de retorno & ticket médio ---
   const pedidosPorCliente = new Map<string, number>()
   ;[...encomendas, ...locacoes].forEach(item => pedidosPorCliente.set(item.cliente_id, (pedidosPorCliente.get(item.cliente_id) ?? 0) + 1))
-  const comRetorno  = [...pedidosPorCliente.values()].filter(n => n > 1).length
+  const comRetorno  = Array.from(pedidosPorCliente.values()).filter(n => n > 1).length
   const taxaRetorno = pedidosPorCliente.size > 0 ? (comRetorno / pedidosPorCliente.size) * 100 : 0
   const totalPedidosMes = encMes.length + locMes.length
   const ticketMedio     = totalPedidosMes > 0 ? fatTotalMes / totalPedidosMes : 0

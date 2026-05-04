@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import {
@@ -46,7 +47,7 @@ export default function Sidebar() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex justify-center items-center px-4 pt-5 pb-4 border-b border-white/[0.06]">
-        <img src="/logo.png" alt="ML Festas" className="h-[84px] w-[84px] object-contain rounded-full" />
+        <Image src="/logo.png" alt="ML Festas" width={84} height={84} style={{ objectFit: 'contain' }} priority />
       </div>
 
       {/* Nav */}

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import {
-  LayoutDashboard, Users, Package, Tent, Calendar, FileText,
+  LayoutDashboard, BarChart2, Users, Package, Tent, Calendar, FileText,
   Link2, LogOut, Menu, X
 } from 'lucide-react'
 import { useState } from 'react'
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/relatorios', label: 'Relatórios', icon: BarChart2 },
   { href: '/clientes', label: 'Clientes', icon: Users },
   { href: '/encomendas', label: 'Encomendas', icon: Package },
   { href: '/locacoes', label: 'Locações', icon: Tent },

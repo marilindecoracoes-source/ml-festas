@@ -8,12 +8,12 @@ import {
   LayoutDashboard, BarChart2, Users, Package, Tent, Calendar, FileText,
   Link2, LogOut, Menu, X
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/relatorios', label: 'Relatórios', icon: BarChart2 },
+  { href: '/relatorios', label: 'Relatórios', icon: BarChart2, adminOnly: true },
   { href: '/clientes', label: 'Clientes', icon: Users },
   { href: '/encomendas', label: 'Encomendas', icon: Package },
   { href: '/locacoes', label: 'Locações', icon: Tent },
@@ -25,6 +25,17 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('perfis').select('role').eq('id', user.id).single().then(({ data }) => {
+        setIsAdmin(data?.role === 'admin')
+      })
+    })
+  }, [])
 
   async function handleLogout() {
     const supabase = createClient()
@@ -53,7 +64,7 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => (
+        {navItems.filter(item => !item.adminOnly || isAdmin).map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}

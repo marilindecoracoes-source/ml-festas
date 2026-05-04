@@ -5,6 +5,7 @@ import {
   Clock, Calendar, BarChart2, Lock, Star,
 } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { startOfMonth, endOfMonth, subMonths, differenceInDays } from 'date-fns'
 
 export const revalidate = 0
@@ -86,7 +87,8 @@ export default async function RelatoriosPage() {
   const { data: perfil } = user
     ? await supabase.from('perfis').select('role').eq('id', user.id).single()
     : { data: null }
-  const isAdmin = perfil?.role === 'admin'
+  if (perfil?.role !== 'admin') redirect('/')
+  const isAdmin = true
 
   const [encRes, locRes, cliRes] = await Promise.all([
     supabase.from('encomendas').select('id, cliente_id, status, valor_total, valor_sinal, restante_pago, created_at, data_entrega, titulo, clientes(nome)'),

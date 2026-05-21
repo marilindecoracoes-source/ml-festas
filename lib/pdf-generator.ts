@@ -2,6 +2,8 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import type { PDFFont, PDFPage } from 'pdf-lib'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import fs from 'fs'
+import path from 'path'
 
 const ML = 50
 const MR = 545
@@ -133,6 +135,10 @@ export async function gerarContratoPDF(data: PDFContratoData): Promise<Uint8Arra
   const doc = await PDFDocument.create()
   const fontReg = await doc.embedFont(StandardFonts.Helvetica)
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
+
+  const sigPath = path.join(process.cwd(), 'public', 'assinatura.jpg')
+  const sigBytes = fs.readFileSync(sigPath)
+  const sigImage = await doc.embedJpg(sigBytes)
 
   let page: PDFPage = doc.addPage([PW, PH])
   let y = 790
@@ -339,11 +345,22 @@ export async function gerarContratoPDF(data: PDFContratoData): Promise<Uint8Arra
   }
 
   // ─── SEÇÃO 7 ────────────────────────────────────────────────────────────
-  checkPage(130)
+  checkPage(160)
   y -= 6
   secHeader('7. ASSINATURAS')
   t(`Rio de Janeiro, ${fmtDateExtenso(data.data_contrato)}.`, ML, y, 9)
-  y -= 45
+  y -= 70
+
+  // Assinatura do locador acima da linha
+  const SIG_MAX_W = 140
+  const SIG_MAX_H = 45
+  const scaleW = SIG_MAX_W / sigImage.width
+  const scaleH = SIG_MAX_H / sigImage.height
+  const sigScale = Math.min(scaleW, scaleH)
+  const sigW = sigImage.width * sigScale
+  const sigH = sigImage.height * sigScale
+  const sigX = ML + 285 + (210 - sigW) / 2
+  page.drawImage(sigImage, { x: sigX, y: y + 6, width: sigW, height: sigH })
 
   // Linhas de assinatura
   hl(y, ML, ML + 210)

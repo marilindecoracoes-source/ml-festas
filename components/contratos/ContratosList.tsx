@@ -8,6 +8,9 @@ interface Contrato {
   id: string
   numero: string
   criado_em: string
+  token_assinatura: string | null
+  status_assinatura: 'pendente' | 'assinado'
+  data_assinatura: string | null
   clientes: { nome: string; cpf: string } | null
   locacoes: { titulo: string; codigo: string } | null
 }
@@ -16,19 +19,52 @@ interface Props {
   contratos: Contrato[]
 }
 
+type Filtro = 'todos' | 'pendente' | 'assinado'
+
 export default function ContratosList({ contratos }: Props) {
   const [busca, setBusca] = useState('')
+  const [filtro, setFiltro] = useState<Filtro>('todos')
+
+  const totalAssinados = contratos.filter(c => c.status_assinatura === 'assinado').length
 
   const filtrados = contratos.filter(c => {
     const q = busca.toLowerCase()
-    return (
+    const matchBusca =
       c.numero.toLowerCase().includes(q) ||
       (c.clientes?.nome ?? '').toLowerCase().includes(q)
-    )
+    const matchFiltro = filtro === 'todos' || c.status_assinatura === filtro
+    return matchBusca && matchFiltro
   })
 
   return (
     <div className="space-y-4">
+      {/* Contador e filtros */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="text-zinc-400 text-sm">
+          <span className="text-green-400 font-medium">{totalAssinados}</span> de{' '}
+          <span className="text-white font-medium">{contratos.length}</span> contrato{contratos.length !== 1 ? 's' : ''} assinado{totalAssinados !== 1 ? 's' : ''}
+        </p>
+        <div className="flex gap-2">
+          {(['todos', 'pendente', 'assinado'] as Filtro[]).map(f => (
+            <button
+              key={f}
+              onClick={() => setFiltro(f)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                filtro === f
+                  ? f === 'assinado'
+                    ? 'bg-green-900/60 text-green-300 border border-green-700/50'
+                    : f === 'pendente'
+                    ? 'bg-yellow-900/60 text-yellow-300 border border-yellow-700/50'
+                    : 'bg-zinc-700 text-white border border-zinc-600'
+                  : 'bg-zinc-800/50 text-zinc-500 border border-zinc-800 hover:text-zinc-300'
+              }`}
+            >
+              {f === 'todos' ? 'Todos' : f === 'pendente' ? 'Pendentes' : 'Assinados'}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Busca */}
       <div className="relative">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
@@ -47,9 +83,11 @@ export default function ContratosList({ contratos }: Props) {
           <div className="p-12 text-center">
             <FileText size={32} className="text-zinc-700 mx-auto mb-3" />
             <p className="text-zinc-500 text-sm">
-              {busca ? 'Nenhum contrato encontrado para essa busca.' : 'Nenhum contrato gerado ainda.'}
+              {busca || filtro !== 'todos' ? 'Nenhum contrato encontrado.' : 'Nenhum contrato gerado ainda.'}
             </p>
-            <p className="text-zinc-600 text-xs mt-1">Os contratos são gerados automaticamente ao criar uma locação.</p>
+            {!busca && filtro === 'todos' && (
+              <p className="text-zinc-600 text-xs mt-1">Os contratos são gerados automaticamente ao criar uma locação.</p>
+            )}
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -59,6 +97,7 @@ export default function ContratosList({ contratos }: Props) {
                 <th className="text-left text-zinc-500 font-medium text-xs uppercase tracking-wide px-4 py-3">Cliente</th>
                 <th className="text-left text-zinc-500 font-medium text-xs uppercase tracking-wide px-4 py-3 hidden md:table-cell">Locação</th>
                 <th className="text-left text-zinc-500 font-medium text-xs uppercase tracking-wide px-4 py-3 hidden sm:table-cell">Data</th>
+                <th className="text-left text-zinc-500 font-medium text-xs uppercase tracking-wide px-4 py-3">Assinatura</th>
                 <th className="text-right text-zinc-500 font-medium text-xs uppercase tracking-wide px-4 py-3">Ações</th>
               </tr>
             </thead>
@@ -77,6 +116,23 @@ export default function ContratosList({ contratos }: Props) {
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell">
                     <p className="text-zinc-400">{formatarData(c.criado_em)}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    {c.status_assinatura === 'assinado' ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+                        <span className="text-green-400 text-xs font-medium">
+                          {c.data_assinatura
+                            ? new Date(c.data_assinatura).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+                            : 'Assinado'}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0" />
+                        <span className="text-yellow-400 text-xs font-medium">Pendente</span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">

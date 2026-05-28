@@ -43,6 +43,8 @@ export async function POST(req: NextRequest) {
         numero,
         locacao_id,
         cliente_id: locacao.cliente_id,
+        token_assinatura: crypto.randomUUID(),
+        status_assinatura: 'pendente',
       })
       .select()
       .single()

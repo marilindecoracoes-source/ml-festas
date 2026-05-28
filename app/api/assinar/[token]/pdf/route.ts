@@ -3,13 +3,13 @@ import { createServiceClient } from '@/lib/supabase-server'
 import { gerarContratoPDF } from '@/lib/pdf-generator'
 import type { PDFContratoData } from '@/lib/pdf-generator'
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: { token: string } }) {
   const supabase = createServiceClient()
 
   const { data: contrato, error } = await supabase
     .from('contratos')
     .select('*, clientes(*), locacoes(*, locacao_itens(*)), status_assinatura, data_assinatura, ip_assinatura, cpf_confirmado')
-    .eq('id', params.id)
+    .eq('token_assinatura', params.token)
     .single()
 
   if (error || !contrato) {
@@ -18,7 +18,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
   const cli = contrato.clientes as any
   const loc = contrato.locacoes as any
-  const itens = (loc?.locacao_itens ?? []).map((i: any) => ({ descricao: i.descricao, quantidade: i.quantidade ?? 1 }))
+  const itens = (loc?.locacao_itens ?? []).map((i: any) => ({
+    descricao: i.descricao,
+    quantidade: i.quantidade ?? 1,
+  }))
 
   const pdfData: PDFContratoData = {
     numero: contrato.numero,
@@ -57,16 +60,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 
   const pdfBytes = await gerarContratoPDF(pdfData)
-
-  const isDownload = req.nextUrl.searchParams.get('download') === 'true'
   const nomeArquivo = `contrato-${contrato.numero.replace('/', '-')}.pdf`
 
   return new NextResponse(Buffer.from(pdfBytes), {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': isDownload
-        ? `attachment; filename="${nomeArquivo}"`
-        : `inline; filename="${nomeArquivo}"`,
+      'Content-Disposition': `inline; filename="${nomeArquivo}"`,
     },
   })
 }

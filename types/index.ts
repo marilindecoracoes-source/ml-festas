@@ -23,12 +23,19 @@ export interface Cliente {
   created_at: string
 }
 
+export type StatusAssinatura = 'pendente' | 'assinado'
+
 export interface Contrato {
   id: string
   numero: string
   locacao_id: string
   cliente_id: string
   criado_em: string
+  token_assinatura: string | null
+  status_assinatura: StatusAssinatura
+  data_assinatura: string | null
+  ip_assinatura: string | null
+  cpf_confirmado: string | null
   clientes?: Pick<Cliente, 'nome' | 'cpf'>
   locacoes?: { titulo: string; codigo: string }
 }

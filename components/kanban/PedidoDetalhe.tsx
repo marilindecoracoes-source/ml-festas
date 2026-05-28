@@ -1,14 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Edit2, CheckSquare, Square } from 'lucide-react'
+import { ArrowLeft, Edit2, CheckSquare, Square, Copy, Check, FileText } from 'lucide-react'
 import type { Encomenda, Locacao } from '@/types'
 import { formatarMoeda, formatarData, formatarCPF } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import PedidoForm from './PedidoForm'
 import { createClient } from '@/lib/supabase'
 import toast from 'react-hot-toast'
+
+interface ContratoInfo {
+  id: string
+  numero: string
+  token_assinatura: string | null
+  status_assinatura: 'pendente' | 'assinado'
+  data_assinatura: string | null
+}
 
 interface Props {
   item: (Encomenda | Locacao) & { clientes?: any; encomenda_itens?: any[]; locacao_itens?: any[] }
@@ -30,6 +38,28 @@ export default function PedidoDetalhe({ item, tipo }: Props) {
   const itensIniciais = (isLocacao ? (item as any).locacao_itens : (item as any).encomenda_itens) ?? []
   const [localItens, setLocalItens] = useState(itensIniciais)
   const statusVariant = isLocacao ? statusLocVariant : statusEncVariant
+  const [contrato, setContrato] = useState<ContratoInfo | null>(null)
+  const [copiado, setCopiado] = useState(false)
+
+  useEffect(() => {
+    if (!isLocacao) return
+    const supabase = createClient()
+    supabase
+      .from('contratos')
+      .select('id, numero, token_assinatura, status_assinatura, data_assinatura')
+      .eq('locacao_id', item.id)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setContrato(data as ContratoInfo) })
+  }, [item.id, isLocacao])
+
+  function copiarLink() {
+    if (!contrato?.token_assinatura) return
+    const url = `${window.location.origin}/assinar/${contrato.token_assinatura}`
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiado(true)
+      setTimeout(() => setCopiado(false), 2500)
+    })
+  }
 
   async function toggleItem(itemId: string, concluido: boolean) {
     const supabase = createClient()
@@ -146,6 +176,57 @@ export default function PedidoDetalhe({ item, tipo }: Props) {
             <div className="gold-card p-5">
               <h3 className="text-gold font-medium text-sm font-display mb-2">Observações</h3>
               <p className="text-zinc-300 text-sm whitespace-pre-wrap">{item.observacoes}</p>
+            </div>
+          )}
+
+          {/* Contrato (somente para locações) */}
+          {isLocacao && contrato && (
+            <div className="gold-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText size={15} className="text-gold" />
+                <h3 className="text-gold font-medium text-sm font-display">Contrato Nº {contrato.numero}</h3>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {/* Status de assinatura */}
+                <div className="flex items-center gap-2 flex-1">
+                  {contrato.status_assinatura === 'assinado' ? (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
+                      <span className="text-green-400 text-sm font-medium">
+                        Assinado em {contrato.data_assinatura
+                          ? new Date(contrato.data_assinatura).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                          : '—'}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" />
+                      <span className="text-yellow-400 text-sm font-medium">Pendente de assinatura</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Botão copiar link */}
+                {contrato.token_assinatura && (
+                  <button
+                    onClick={copiarLink}
+                    className="ghost-btn flex items-center gap-2 text-sm flex-shrink-0"
+                  >
+                    {copiado ? (
+                      <>
+                        <Check size={14} className="text-green-400" />
+                        <span className="text-green-400">Link copiado!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={14} />
+                        Copiar Link de Assinatura
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -37,6 +37,12 @@ export interface PDFContratoData {
     data_pedido: string
   }
   data_contrato: string
+  assinatura_digital?: {
+    nome: string
+    cpf: string
+    data: string
+    ip: string
+  }
 }
 
 const CLAUSULAS = [
@@ -376,6 +382,30 @@ export async function gerarContratoPDF(data: PDFContratoData): Promise<Uint8Arra
   const respLabel = 'Mariza Linhares da Silva'
   const respW = fontReg.widthOfTextAtSize(respLabel, 9)
   t(respLabel, ML + 285 + ((MR - ML - 285) - respW) / 2, y, 9)
+
+  // Assinatura digital do locatário (se já assinou)
+  if (data.assinatura_digital) {
+    const sig = data.assinatura_digital
+    const fmtDataSig = (() => {
+      try {
+        return format(parseISO(sig.data), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+      } catch {
+        return sig.data
+      }
+    })()
+    y -= 13
+    const digLabel = `Assinado digitalmente por ${sig.nome}`
+    const digW = fontBold.widthOfTextAtSize(digLabel, 8)
+    t(digLabel, ML + (210 - digW) / 2, y, 8, true)
+    y -= 11
+    const digData = `Em ${fmtDataSig} — IP: ${sig.ip}`
+    const digDataW = fontReg.widthOfTextAtSize(digData, 7)
+    t(digData, ML + (210 - digDataW) / 2, y, 7)
+    y -= 10
+    const digCpf = `CPF: ${sig.cpf}`
+    const digCpfW = fontReg.widthOfTextAtSize(digCpf, 7)
+    t(digCpf, ML + (210 - digCpfW) / 2, y, 7)
+  }
   y -= 35
 
   // Rodapé

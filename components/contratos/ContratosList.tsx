@@ -27,7 +27,7 @@ export default function ContratosList({ contratos }: Props) {
   const [copiado, setCopiado] = useState<string | null>(null)
 
   function copiarLink(token: string, id: string) {
-    const url = `https://mlfestas.com.br/assinar/${token}`
+    const url = `https://gestao.mlfestas.com.br/assinar/${token}`
     navigator.clipboard.writeText(url).then(() => {
       setCopiado(id)
       setTimeout(() => setCopiado(null), 2000)

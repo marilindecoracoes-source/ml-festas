@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Eye, Download, FileText, Search } from 'lucide-react'
+import { Eye, Download, FileText, Search, Link2, Check } from 'lucide-react'
 import { formatarData } from '@/lib/utils'
 
 interface Contrato {
@@ -24,6 +24,15 @@ type Filtro = 'todos' | 'pendente' | 'assinado'
 export default function ContratosList({ contratos }: Props) {
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState<Filtro>('todos')
+  const [copiado, setCopiado] = useState<string | null>(null)
+
+  function copiarLink(token: string, id: string) {
+    const url = `${window.location.origin}/assinar/${token}`
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiado(id)
+      setTimeout(() => setCopiado(null), 2000)
+    })
+  }
 
   const totalAssinados = contratos.filter(c => c.status_assinatura === 'assinado').length
 
@@ -136,6 +145,15 @@ export default function ContratosList({ contratos }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">
+                      {c.status_assinatura === 'pendente' && c.token_assinatura && (
+                        <button
+                          onClick={() => copiarLink(c.token_assinatura!, c.id)}
+                          className={`ghost-btn p-2 transition-colors ${copiado === c.id ? 'text-green-400' : 'text-zinc-400 hover:text-gold'}`}
+                          title={copiado === c.id ? 'Link copiado!' : 'Copiar link de assinatura'}
+                        >
+                          {copiado === c.id ? <Check size={15} /> : <Link2 size={15} />}
+                        </button>
+                      )}
                       <a
                         href={`/api/contratos/${c.id}`}
                         target="_blank"

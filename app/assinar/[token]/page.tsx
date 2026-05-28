@@ -197,15 +197,35 @@ export default function AssinarPage() {
 
         {/* Visualização do contrato em PDF */}
         <div className="rounded-xl border border-[#C9A84C]/20 bg-[#1a1a1a] overflow-hidden">
-          <p className="text-zinc-400 text-xs px-4 py-2 border-b border-zinc-800">
-            Leia o contrato completo antes de assinar:
-          </p>
+          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800">
+            <p className="text-zinc-400 text-xs">Leia o contrato completo antes de assinar:</p>
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#C9A84C] text-xs underline underline-offset-2 flex-shrink-0 ml-3"
+            >
+              Abrir em nova aba ↗
+            </a>
+          </div>
           <iframe
             src={pdfUrl}
-            className="w-full"
-            style={{ height: '55vh', minHeight: 320 }}
+            className="w-full hidden sm:block"
+            style={{ height: '70vh' }}
             title="Contrato de Locação"
           />
+          <div className="sm:hidden p-5 text-center space-y-3">
+            <p className="text-zinc-400 text-sm">Toque no botão abaixo para ler o contrato completo:</p>
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
+              style={{ background: 'rgba(201,168,76,0.15)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.3)' }}
+            >
+              📄 Ver contrato completo
+            </a>
+          </div>
         </div>
 
         {/* Formulário de assinatura */}

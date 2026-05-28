@@ -8,7 +8,7 @@ export default async function ContratosPage() {
   const supabase = createServerSupabaseClient()
   const { data: contratos } = await supabase
     .from('contratos')
-    .select('*, clientes(nome, cpf), locacoes(titulo, codigo), token_assinatura, status_assinatura, data_assinatura')
+    .select('*, clientes(nome, cpf, telefone), locacoes(titulo, codigo), token_assinatura, status_assinatura, data_assinatura')
     .order('criado_em', { ascending: false })
 
   return (

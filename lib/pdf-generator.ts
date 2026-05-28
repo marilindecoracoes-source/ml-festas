@@ -388,7 +388,14 @@ export async function gerarContratoPDF(data: PDFContratoData): Promise<Uint8Arra
     const sig = data.assinatura_digital
     const fmtDataSig = (() => {
       try {
-        return format(parseISO(sig.data), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+        const date = parseISO(sig.data)
+        const parts = new Intl.DateTimeFormat('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: false,
+        }).formatToParts(date)
+        const g = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+        return `${g('day')}/${g('month')}/${g('year')} às ${g('hour')}:${g('minute')}`
       } catch {
         return sig.data
       }

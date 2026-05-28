@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Eye, Download, FileText, Search, Link2, Check } from 'lucide-react'
+import { Eye, Download, FileText, Search, Link2, Check, MessageCircle } from 'lucide-react'
 import { formatarData } from '@/lib/utils'
 
 interface Contrato {
@@ -11,7 +11,7 @@ interface Contrato {
   token_assinatura: string | null
   status_assinatura: 'pendente' | 'assinado'
   data_assinatura: string | null
-  clientes: { nome: string; cpf: string } | null
+  clientes: { nome: string; cpf: string; telefone: string | null } | null
   locacoes: { titulo: string; codigo: string } | null
 }
 
@@ -32,6 +32,14 @@ export default function ContratosList({ contratos }: Props) {
       setCopiado(id)
       setTimeout(() => setCopiado(null), 2000)
     })
+  }
+
+  function linkWhatsApp(telefone: string, nome: string, token: string) {
+    const numero = telefone.replace(/\D/g, '')
+    const com55 = numero.startsWith('55') ? numero : `55${numero}`
+    const url = `https://gestao.mlfestas.com.br/assinar/${token}`
+    const msg = encodeURIComponent(`Olá, ${nome.split(' ')[0]}! 😊\nSegue o link para assinar seu contrato com a ML Festas:\n${url}`)
+    return `https://wa.me/${com55}?text=${msg}`
   }
 
   const totalAssinados = contratos.filter(c => c.status_assinatura === 'assinado').length
@@ -146,13 +154,26 @@ export default function ContratosList({ contratos }: Props) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">
                       {c.status_assinatura === 'pendente' && c.token_assinatura && (
-                        <button
-                          onClick={() => copiarLink(c.token_assinatura!, c.id)}
-                          className={`ghost-btn p-2 transition-colors ${copiado === c.id ? 'text-green-400' : 'text-zinc-400 hover:text-gold'}`}
-                          title={copiado === c.id ? 'Link copiado!' : 'Copiar link de assinatura'}
-                        >
-                          {copiado === c.id ? <Check size={15} /> : <Link2 size={15} />}
-                        </button>
+                        <>
+                          {c.clientes?.telefone && (
+                            <a
+                              href={linkWhatsApp(c.clientes.telefone, c.clientes.nome, c.token_assinatura)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ghost-btn p-2 text-zinc-400 hover:text-green-400 transition-colors"
+                              title="Enviar link pelo WhatsApp"
+                            >
+                              <MessageCircle size={15} />
+                            </a>
+                          )}
+                          <button
+                            onClick={() => copiarLink(c.token_assinatura!, c.id)}
+                            className={`ghost-btn p-2 transition-colors ${copiado === c.id ? 'text-green-400' : 'text-zinc-400 hover:text-gold'}`}
+                            title={copiado === c.id ? 'Link copiado!' : 'Copiar link de assinatura'}
+                          >
+                            {copiado === c.id ? <Check size={15} /> : <Link2 size={15} />}
+                          </button>
+                        </>
                       )}
                       <a
                         href={`/api/contratos/${c.id}`}

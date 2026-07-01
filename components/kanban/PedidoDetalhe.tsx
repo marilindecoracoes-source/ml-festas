@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Edit2, CheckSquare, Square, Copy, Check, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Edit2, CheckSquare, Square, Copy, Check, FileText, Trash2 } from 'lucide-react'
 import type { Encomenda, Locacao } from '@/types'
 import { formatarMoeda, formatarData, formatarCPF } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
@@ -31,6 +32,7 @@ const statusLocVariant: Record<string, any> = {
 }
 
 export default function PedidoDetalhe({ item, tipo }: Props) {
+  const router = useRouter()
   const [editando, setEditando] = useState(false)
   const isLocacao = tipo === 'locacao'
   const loc = isLocacao ? item as Locacao : null
@@ -40,6 +42,21 @@ export default function PedidoDetalhe({ item, tipo }: Props) {
   const statusVariant = isLocacao ? statusLocVariant : statusEncVariant
   const [contrato, setContrato] = useState<ContratoInfo | null>(null)
   const [copiado, setCopiado] = useState(false)
+  const [confirmandoExclusao, setConfirmandoExclusao] = useState(false)
+  const [excluindo, setExcluindo] = useState(false)
+
+  async function excluir() {
+    setExcluindo(true)
+    const res = await fetch(`/api/${isLocacao ? 'locacoes' : 'encomendas'}/${item.id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      toast.error('Erro ao excluir.')
+      setExcluindo(false)
+      return
+    }
+    toast.success(isLocacao ? 'Locação excluída.' : 'Encomenda excluída.')
+    router.push(isLocacao ? '/locacoes' : '/encomendas')
+    router.refresh()
+  }
 
   useEffect(() => {
     if (!isLocacao) return
@@ -94,10 +111,37 @@ export default function PedidoDetalhe({ item, tipo }: Props) {
             <p className="text-zinc-500 text-sm">{item.codigo} · {isLocacao ? 'Locação' : 'Encomenda'}</p>
           </div>
         </div>
-        <button onClick={() => setEditando(!editando)} className="ghost-btn flex items-center gap-2 text-sm flex-shrink-0">
-          <Edit2 size={14} />
-          {editando ? 'Cancelar' : 'Editar'}
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {confirmandoExclusao ? (
+            <>
+              <span className="text-xs text-zinc-400">Excluir de vez?</span>
+              <button
+                onClick={excluir}
+                disabled={excluindo}
+                className="text-sm px-3 py-2 rounded-lg bg-red-900/40 text-red-400 border border-red-700/40 hover:bg-red-900/60 transition-colors"
+              >
+                {excluindo ? 'Excluindo...' : 'Sim, excluir'}
+              </button>
+              <button onClick={() => setConfirmandoExclusao(false)} disabled={excluindo} className="ghost-btn text-sm">
+                Cancelar
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setEditando(!editando)} className="ghost-btn flex items-center gap-2 text-sm">
+                <Edit2 size={14} />
+                {editando ? 'Cancelar' : 'Editar'}
+              </button>
+              <button
+                onClick={() => setConfirmandoExclusao(true)}
+                className="p-2 text-zinc-500 hover:text-red-400 transition-colors"
+                title={isLocacao ? 'Excluir locação' : 'Excluir encomenda'}
+              >
+                <Trash2 size={16} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {editando ? (

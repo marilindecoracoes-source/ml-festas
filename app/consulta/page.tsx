@@ -129,18 +129,20 @@ export default function ConsultaPage() {
                           <p className="text-zinc-500 text-xs capitalize">{pedido.tipo}</p>
                         </div>
                       </div>
-                      {pedido.posicaoFila != null ? (
-                        <div className="text-right flex-shrink-0">
-                          <p className="text-xs text-zinc-500">Fila</p>
-                          <p className="text-sm text-gold font-medium">{pedido.posicaoFila}º</p>
-                        </div>
-                      ) : pedido.data && (
+                      {pedido.posicaoFila == null && pedido.data && (
                         <div className="text-right flex-shrink-0">
                           <p className="text-xs text-zinc-500">{pedido.tipo === 'encomenda' ? 'Entrega' : 'Retirada'}</p>
                           <p className="text-sm text-gold font-medium">{formatarData(pedido.data)}</p>
                         </div>
                       )}
                     </div>
+
+                    {pedido.posicaoFila != null && (
+                      <div className="flex flex-col items-center justify-center bg-zinc-900/60 border border-gold/30 rounded-xl py-4">
+                        <p className="text-xs text-zinc-400 uppercase tracking-wide">Sua posição na fila</p>
+                        <p className="text-5xl font-display font-bold text-gold leading-tight mt-1">{pedido.posicaoFila}º</p>
+                      </div>
+                    )}
 
                     <BarraProgresso etapas={etapas} statusAtual={pedido.status} />
 

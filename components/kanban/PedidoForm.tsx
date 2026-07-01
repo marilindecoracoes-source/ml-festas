@@ -29,6 +29,7 @@ const schema = z.object({
   data_entrega: z.string().optional(),
   data_retirada: z.string().optional(),
   data_devolucao: z.string().optional(),
+  pedido_fila: z.boolean().optional(),
   valor_total: z.coerce.number().min(0),
   valor_sinal: z.coerce.number().min(0),
   forma_pagamento_sinal: z.string().optional(),
@@ -66,6 +67,7 @@ export default function PedidoForm({ tipo, item }: Props) {
       data_entrega: isLocacao ? undefined : (item as Encomenda)?.data_entrega ?? '',
       data_retirada: isLocacao ? (item as Locacao)?.data_retirada ?? '' : undefined,
       data_devolucao: isLocacao ? (item as Locacao)?.data_devolucao ?? '' : undefined,
+      pedido_fila: isLocacao ? undefined : (item as Encomenda)?.pedido_fila ?? false,
       valor_total: item?.valor_total ?? 0,
       valor_sinal: item?.valor_sinal ?? 0,
       forma_pagamento_sinal: item?.forma_pagamento_sinal ?? '',
@@ -130,6 +132,7 @@ export default function PedidoForm({ tipo, item }: Props) {
       payload.data_devolucao = data.data_devolucao || null
     } else {
       payload.data_entrega = data.data_entrega || null
+      payload.pedido_fila = data.pedido_fila ?? false
     }
 
     let id = item?.id
@@ -261,6 +264,17 @@ export default function PedidoForm({ tipo, item }: Props) {
             </>
           )}
         </div>
+        {!isLocacao && (
+          <label className="flex items-start gap-2 cursor-pointer pt-1">
+            <input {...register('pedido_fila')} type="checkbox" className="accent-gold w-4 h-4 mt-0.5" />
+            <span className="text-sm text-zinc-300">
+              Pedido em fila de espera
+              <span className="block text-xs text-zinc-500">
+                Na consulta pública, o cliente não vê a data de entrega — em vez disso, vê sua posição na fila (1º, 2º, 3º...)
+              </span>
+            </span>
+          </label>
+        )}
       </section>
 
       {/* Itens */}

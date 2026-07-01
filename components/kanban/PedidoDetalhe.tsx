@@ -89,6 +89,7 @@ export default function PedidoDetalhe({ item, tipo }: Props) {
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-display font-bold text-white">{item.titulo}</h1>
               <Badge variant={statusVariant[item.status]}>{item.status}</Badge>
+              {enc?.pedido_fila && <Badge variant="gray">Fila</Badge>}
             </div>
             <p className="text-zinc-500 text-sm">{item.codigo} · {isLocacao ? 'Locação' : 'Encomenda'}</p>
           </div>

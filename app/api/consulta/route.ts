@@ -23,16 +23,26 @@ export async function GET(request: NextRequest) {
 
   if (!cliente) return NextResponse.json({ pedidos: [] })
 
-  const [encRes, locRes] = await Promise.all([
+  const STATUS_ATIVOS_FILA = ['Pedido', 'Em Produção']
+
+  const [encRes, locRes, filaRes] = await Promise.all([
     supabase.from('encomendas')
-      .select('id, titulo, status, data_entrega, encomenda_itens(descricao)')
+      .select('id, titulo, status, data_entrega, pedido_fila, encomenda_itens(descricao)')
       .eq('cliente_id', cliente.id)
       .in('status', STATUS_VISIVEIS_ENCOMENDA),
     supabase.from('locacoes')
       .select('id, titulo, status, data_retirada, locacao_itens(descricao)')
       .eq('cliente_id', cliente.id)
       .in('status', STATUS_VISIVEIS_LOCACAO),
+    supabase.from('encomendas')
+      .select('id')
+      .eq('pedido_fila', true)
+      .in('status', STATUS_ATIVOS_FILA)
+      .order('created_at', { ascending: true }),
   ])
+
+  const posicaoFila = new Map<string, number>()
+  ;(filaRes.data ?? []).forEach((e, i) => posicaoFila.set(e.id, i + 1))
 
   const pedidos = [
     ...(encRes.data ?? []).map(e => ({
@@ -40,7 +50,8 @@ export async function GET(request: NextRequest) {
       titulo: e.titulo,
       tipo: 'encomenda' as const,
       status: e.status,
-      data: e.data_entrega,
+      data: e.pedido_fila ? null : e.data_entrega,
+      posicaoFila: e.pedido_fila ? posicaoFila.get(e.id) ?? null : null,
       itens: (e.encomenda_itens ?? []).map((i: any) => i.descricao),
     })),
     ...(locRes.data ?? []).map(l => ({

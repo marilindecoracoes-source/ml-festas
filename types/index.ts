@@ -56,6 +56,7 @@ export interface Encomenda {
   status: StatusEncomenda
   data_pedido: string
   data_entrega: string | null
+  pedido_fila: boolean
   valor_total: number
   valor_sinal: number
   forma_pagamento_sinal: FormaPagamento | null

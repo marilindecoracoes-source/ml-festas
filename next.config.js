@@ -35,6 +35,13 @@ const nextConfig = {
           { key: 'Content-Security-Policy', value: [...cspBase, "frame-ancestors 'self'"].join('; ') },
         ],
       },
+      {
+        source: '/api/assinar-compra/:token/pdf',
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Content-Security-Policy', value: [...cspBase, "frame-ancestors 'self'"].join('; ') },
+        ],
+      },
     ]
   },
 }

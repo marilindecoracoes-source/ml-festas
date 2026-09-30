@@ -142,7 +142,7 @@ export default function NovoContratoForm() {
       {/* Termos do plano */}
       <section className="gold-card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-gold font-display">Termos do Plano</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Valor da parcela (R$)">
             <input
               type="text"

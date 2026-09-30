@@ -105,6 +105,7 @@ export default function ComprasProgramadasList({ contratos }: Props) {
             </p>
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-800">
@@ -195,6 +196,7 @@ export default function ComprasProgramadasList({ contratos }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

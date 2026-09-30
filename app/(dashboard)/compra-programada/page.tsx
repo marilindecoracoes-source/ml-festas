@@ -14,7 +14,7 @@ export default async function CompraProgramadaPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-display font-bold text-white flex items-center gap-2">
             <Wallet size={22} className="text-gold" />
@@ -22,7 +22,7 @@ export default async function CompraProgramadaPage() {
           </h1>
           <p className="text-zinc-400 text-sm">{contratos?.length ?? 0} contrato{(contratos?.length ?? 0) !== 1 ? 's' : ''} criado{(contratos?.length ?? 0) !== 1 ? 's' : ''}</p>
         </div>
-        <Link href="/compra-programada/novo" className="gold-btn flex items-center gap-2 px-4 py-2.5">
+        <Link href="/compra-programada/novo" className="gold-btn flex items-center justify-center gap-2 px-4 py-2.5 w-full sm:w-auto">
           <Plus size={16} />
           Novo Contrato
         </Link>

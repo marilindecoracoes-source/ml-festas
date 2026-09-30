@@ -40,6 +40,23 @@ export interface Contrato {
   locacoes?: { titulo: string; codigo: string }
 }
 
+export interface CompraProgramada {
+  id: string
+  numero: string
+  cliente_id: string
+  valor_parcela: number
+  prazo_meses: number
+  valor_credito: number
+  dia_vencimento: number
+  criado_em: string
+  token_assinatura: string | null
+  status_assinatura: StatusAssinatura
+  data_assinatura: string | null
+  ip_assinatura: string | null
+  cpf_confirmado: string | null
+  clientes?: Pick<Cliente, 'nome' | 'cpf' | 'telefone' | 'rua' | 'numero' | 'complemento' | 'bairro' | 'cidade' | 'estado' | 'cep'>
+}
+
 export interface EncomendaItem {
   id: string
   encomenda_id: string

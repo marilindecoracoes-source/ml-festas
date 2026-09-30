@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import {
   LayoutDashboard, BarChart2, Users, Package, Tent, Calendar, FileText,
-  Link2, LogOut, Menu, X
+  Link2, LogOut, Menu, X, Wallet
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -18,6 +18,7 @@ const navItems = [
   { href: '/encomendas', label: 'Encomendas', icon: Package },
   { href: '/locacoes', label: 'Locações', icon: Tent },
   { href: '/contratos', label: 'Contratos', icon: FileText },
+  { href: '/compra-programada', label: 'Compra Programada', icon: Wallet },
   { href: '/calendario', label: 'Calendário', icon: Calendar },
 ]
 

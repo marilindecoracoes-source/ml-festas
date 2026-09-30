@@ -201,7 +201,7 @@ export default function PedidoForm({ tipo, item }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Cliente */}
-      <section className="gold-card p-5 space-y-3">
+      <section className="gold-card p-5 space-y-3 relative z-20">
         <h2 className="text-sm font-semibold text-gold font-display">Cliente</h2>
         {clienteNome ? (
           <div className="flex items-center justify-between bg-zinc-800 rounded-lg px-3 py-2.5">
